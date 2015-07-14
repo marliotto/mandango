@@ -175,7 +175,7 @@ class LoggableMongoCollection extends \MongoCollection
     /**
      * find.
      */
-    public function find(array $query = array(), array $fields = array())
+    public function find($query = NULL, $fields = NULL)
     {
         return new LoggableMongoCursor($this, $query, $fields);
     }
