@@ -26,7 +26,7 @@ class LoggableMongoCursor extends \MongoCursor
     /**
      * Constructor.
      */
-    public function __construct(LoggableMongoCollection $collection, array $query = array(), array $fields = array(), $type = 'find')
+    public function __construct(LoggableMongoCollection $collection, array $query = null, array $fields = null, $type = 'find')
     {
         $this->collection = $collection;
 
@@ -34,10 +34,10 @@ class LoggableMongoCursor extends \MongoCursor
         $ns = $collection->getDB()->__toString().'.'.$collection->getName();
 
         $this->type = $type;
-        $this->explainCursor = new \MongoCursor($mongo, $ns, $query, $fields);
+        $this->explainCursor = new \MongoCursor($mongo, $ns, $query ?: array(), $fields ?: array());
         $this->time = new Time();
 
-        parent::__construct($mongo, $ns, $query, $fields);
+        parent::__construct($mongo, $ns, $query ?: array(), $fields ?: array());
     }
 
     /**
