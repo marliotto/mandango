@@ -180,12 +180,12 @@ class LoggableMongoCursor extends \MongoCursor
                 $log['snapshot'] = 1;
             }
             $log['explain'] = array(
-                'nscanned'        => $explain['nscanned'],
-                'nscannedObjects' => $explain['nscannedObjects'],
-                'n'               => $explain['n'],
-                'indexBounds'     => $explain['indexBounds'],
+                'nscanned'        => $explain['executionStats']['totalKeysExamined'],
+                'nscannedObjects' => $explain['executionStats']['totalDocsExamined'],
+                'n'               => $explain['executionStats']['nReturned'],
+                'indexBounds'     => isset($explain['indexBounds']) ? $explain['indexBounds'] : null,
             );
-            $log['time'] = $explain['millis'];
+            $log['time'] = $explain['executionStats']['executionTimeMillis'];
 
             $this->log($log);
         }
