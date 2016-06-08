@@ -144,7 +144,7 @@ abstract class Query implements \Countable, \IteratorAggregate
      */
     public function criteria(array $criteria)
     {
-        $this->criteria = $criteria;
+        $this->criteria = $this->cleanCriteria($criteria);
 
         return $this;
     }
@@ -161,6 +161,7 @@ abstract class Query implements \Countable, \IteratorAggregate
     public function mergeCriteria(array $criteria)
     {
         $this->criteria = null === $this->criteria ? $criteria : array_merge($this->criteria, $criteria);
+        $this->criteria = $this->cleanCriteria($this->criteria);
 
         return $this;
     }
@@ -602,5 +603,32 @@ abstract class Query implements \Countable, \IteratorAggregate
         }
 
         return $cursor;
+    }
+
+    /**
+     * Cleans a criteria array, to ensure
+     * that only a correct BSON-formatted array is sent to Mongo
+     * for the $in and $nin query types
+     *
+     * @param array $criteria
+     * @return array
+     */
+    private function cleanCriteria(array $criteria)
+    {
+        foreach ($criteria as $field => $queryParts) {
+            if (!is_array($queryParts)) {
+                continue;
+            }
+            foreach ($queryParts as $type => $data) {
+                if (!in_array($type, array('$in', '$nin'))) {
+                    continue;
+                }
+
+                $queryParts[$type] = array_values($data);
+            }
+            $criteria[$field] = $queryParts;
+        }
+
+        return $criteria;
     }
 }
