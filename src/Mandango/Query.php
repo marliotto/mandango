@@ -620,7 +620,7 @@ abstract class Query implements \Countable, \IteratorAggregate
                 continue;
             }
             foreach ($queryParts as $type => $data) {
-                if (!in_array($type, array('$in', '$nin'))) {
+                if (!in_array($type, array('$in', '$nin'), true)) {
                     continue;
                 }
 
