@@ -179,13 +179,23 @@ class LoggableMongoCursor extends \MongoCursor
             if (isset($info['query']['$snapshot'])) {
                 $log['snapshot'] = 1;
             }
-            $log['explain'] = array(
-                'nscanned'        => $explain['executionStats']['totalKeysExamined'],
-                'nscannedObjects' => $explain['executionStats']['totalDocsExamined'],
-                'n'               => $explain['executionStats']['nReturned'],
-                'indexBounds'     => isset($explain['indexBounds']) ? $explain['indexBounds'] : null,
-            );
-            $log['time'] = $explain['executionStats']['executionTimeMillis'];
+            if (array_key_exists('executionStats', $explain)) {
+                $log['explain'] = array(
+                    'nscanned'        => $explain['executionStats']['totalKeysExamined'],
+                    'nscannedObjects' => $explain['executionStats']['totalDocsExamined'],
+                    'n'               => $explain['executionStats']['nReturned'],
+                    'indexBounds'     => isset($explain['indexBounds']) ? $explain['indexBounds'] : null,
+                );
+                $log['time'] = $explain['executionStats']['executionTimeMillis'];
+            } else {
+                $log['explain'] = array(
+                    'nscanned' => $explain['nscanned'],
+                    'nscannedObjects' => $explain['nscannedObjects'],
+                    'n' => $explain['n'],
+                    'indexBounds' => $explain['indexBounds'],
+                );
+                $log['time'] = $explain['millis'];
+            }
 
             $this->log($log);
         }
